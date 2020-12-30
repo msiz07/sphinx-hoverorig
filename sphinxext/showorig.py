@@ -1,6 +1,6 @@
 # support for tooltip showing original text ----------------------------
 from os import path
-from typing import Any, Dict, List, Tuple, TypeVar
+from typing import Any
 from docutils.utils import relative_path
 from docutils.nodes import Node, Element, TextElement
 from sphinx.builders.html import StandaloneHTMLBuilder
@@ -15,19 +15,19 @@ logger = logging.getLogger(__name__)
 
 if False:
     # For type annotation
-    from typing import Type  # for python3.5.1
     from sphinx.application import Sphinx
+    from docutils.nodes import NodeVisitor
 
 
-class locale_original_text(TextElement):
+class LocaleOriginalText(TextElement):
     pass
 
 
-def visit_locale_original_text(self, node):
+def visit_locale_original_text(self: NodeVisitor, node: Node) -> None:
     self.body.append(self.starttag(node, "span"))
 
 
-def depart_locale_original_text(self, node):
+def depart_locale_original_text(self: NodeVisitor, node: Node) -> None:
     self.body.append("</span>")
     # logger.info(node)
 
@@ -86,7 +86,7 @@ def is_translated_node(node: Node) -> bool:
     return ORIGINAL_TEXT_ATTR in node.attributes
 
 
-def append_css_class(node, class_) -> None:
+def append_css_class(node: Node, class_: str) -> None:
     node.coerce_append_attr_list("classes", class_)
 
 
@@ -118,22 +118,22 @@ class PostProcessTranslatedNode(SphinxTransform):
 
             # append original msg node as literal node
             # orig_text_node = literal(text=node[ORIGINAL_TEXT_ATTR])
-            orig_text_node = locale_original_text(text=node[ORIGINAL_TEXT_ATTR])
+            orig_text_node = LocaleOriginalText(text=node[ORIGINAL_TEXT_ATTR])
             append_css_class(orig_text_node, ORIGINAL_TEXT_CSS)
             node.append(orig_text_node)
 
 
-def setup(app):
+def setup(app: Sphinx) -> None:
     # display builder info to check what builder is used
     # e.g. to check the builder in external env such as readthedocs
-    def show_builder_name(event_app):
+    def show_builder_name(event_app: Sphinx) -> None:
         logger.info("builder name: %s" % event_app.builder.name)
         logger.info(event_app.builder)
 
     app.connect("builder-inited", show_builder_name)
 
     # for original text tooltip support
-    def setup_html_builder_extras(event_app):
+    def setup_html_builder_extras(event_app: Sphinx) -> None:
         lang = event_app.config.language
         if lang is None:
             return
@@ -142,14 +142,15 @@ def setup(app):
         event_app.add_transform(PreserveLocaleOriginalMessage)
         event_app.add_transform(PostProcessTranslatedNode)
         event_app.add_css_file("trans-tooltip.css")
-        visitor_methods = {
-            "html": (visit_locale_original_text, depart_locale_original_text)
-        }
-        event_app.add_node(locale_original_text, **visitor_methods)
+        # register new Node type with vistor methods
+        event_app.add_node(
+            LocaleOriginalText,
+            html=(visit_locale_original_text, depart_locale_original_text),
+        )
 
     app.connect("builder-inited", setup_html_builder_extras)
 
-    def copy_asset_files(event_app, exception):
+    def copy_asset_files(event_app: Sphinx, exception: Exception) -> None:
         if not exception:
             static_dir = path.join(path.dirname(__file__), "_static")
             out_static_dir = path.join(event_app.outdir, "_static")
