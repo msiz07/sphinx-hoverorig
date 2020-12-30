@@ -1,8 +1,7 @@
 # support for tooltip showing original text ----------------------------
 from os import path
-from typing import Any
 from docutils.utils import relative_path
-from docutils.nodes import Node, Element, TextElement
+from docutils.nodes import Element, TextElement
 from sphinx.builders.html import StandaloneHTMLBuilder
 from sphinx.locale import init as init_locale
 from sphinx.transforms import SphinxTransform
@@ -15,8 +14,9 @@ logger = logging.getLogger(__name__)
 
 if False:
     # For type annotation
+    from typing import Any, Text
+    from docutils.nodes import Node, NodeVisitor
     from sphinx.application import Sphinx
-    from docutils.nodes import NodeVisitor
 
 
 class LocaleOriginalText(TextElement):
@@ -86,7 +86,7 @@ def is_translated_node(node: Node) -> bool:
     return ORIGINAL_TEXT_ATTR in node.attributes
 
 
-def append_css_class(node: Node, class_: str) -> None:
+def append_css_class(node: Node, class_: Text) -> None:
     node.coerce_append_attr_list("classes", class_)
 
 
