@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 if False:
     # For type annotation
     from typing import Any, Text
-    from docutils.nodes import Node, NodeVisitor
+    from docutils.nodes import Node
+    from docutils.writers._html_base import HTMLTranslator
     from sphinx.application import Sphinx
 
 
@@ -23,11 +24,11 @@ class LocaleOriginalText(TextElement):
     pass
 
 
-def visit_locale_original_text(self: NodeVisitor, node: Node) -> None:
+def visit_locale_original_text(self: HTMLTranslator, node: TextElement) -> None:
     self.body.append(self.starttag(node, "span"))
 
 
-def depart_locale_original_text(self: NodeVisitor, node: Node) -> None:
+def depart_locale_original_text(self: HTMLTranslator, node: TextElement) -> None:
     self.body.append("</span>")
     # logger.info(node)
 
@@ -86,7 +87,7 @@ def is_translated_node(node: Node) -> bool:
     return ORIGINAL_TEXT_ATTR in node.attributes
 
 
-def append_css_class(node: Node, class_: Text) -> None:
+def append_css_class(node: Element, class_: Text) -> None:
     node.coerce_append_attr_list("classes", class_)
 
 
