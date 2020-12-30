@@ -32,9 +32,9 @@ def depart_locale_original_text(self, node):
     # logger.info(node)
 
 
-original_text_attr = "data-trans-original-text"
-original_text_css = "trans-original-text"
-translated_text_css = "trans-translated-text"
+ORIGINAL_TEXT_ATTR = "data-trans-original-text"
+ORIGINAL_TEXT_CSS = "trans-original-text"
+TRANSLATED_TEXT_CSS = "trans-translated-text"
 
 
 # custom transform for keep left original text translated, implemented
@@ -42,15 +42,16 @@ translated_text_css = "trans-translated-text"
 class PreserveLocaleOriginalMessage(SphinxTransform):
     """
     Add locale original text to translated nodes as %s attribute.
-    """ % original_text_attr
+    """ % ORIGINAL_TEXT_ATTR
 
-    # default_priority = 20 # priority of sphinx.transforms.i18n.Locale
+    # 20 is the priority of sphinx.transforms.i18n.Locale
     default_priority = 15
+    # default_priority = 20
 
     logger = logging.getLogger(__name__)
 
     def apply(self, **kwargs: Any) -> None:
-        settings, source = self.document.settings, self.document["source"]
+        source = self.document["source"]
         msgstr = ""
 
         # XXX check if this is reliable
@@ -69,20 +70,20 @@ class PreserveLocaleOriginalMessage(SphinxTransform):
         if not has_catalog:
             return
 
-        # preserve original msg of translated one as original_text_attr attribute
+        # preserve original msg of translated one as ORIGINAL_TEXT_ATTR attribute
         for node, msg in extract_messages(self.document):
             msgstr = catalog.gettext(msg)
             if not msgstr or msgstr == msg or not msgstr.strip():
                 # as-of-yet untranslated
                 continue
-            # self.logger.info("add %s attr to node." % original_text_attr)
-            node[original_text_attr] = msg
+            # self.logger.info("add %s attr to node." % ORIGINAL_TEXT_ATTR)
+            node[ORIGINAL_TEXT_ATTR] = msg
 
 
 def is_translated_node(node: Node) -> bool:
     if not isinstance(node, Element):
         return False
-    return original_text_attr in node.attributes
+    return ORIGINAL_TEXT_ATTR in node.attributes
 
 
 def append_css_class(node, class_) -> None:
@@ -94,8 +95,8 @@ class PostProcessTranslatedNode(SphinxTransform):
     Add %s class attribute to translated text node.
     Append locale original text node with %s class to translated text node.
     """ % (
-        translated_text_css,
-        original_text_css,
+        TRANSLATED_TEXT_CSS,
+        ORIGINAL_TEXT_CSS,
     )
 
     # 20 is the priority of sphinx.transforms.i18n.Locale
@@ -108,17 +109,17 @@ class PostProcessTranslatedNode(SphinxTransform):
 
     def apply(self, **kwargs: Any) -> None:
         # XXX check if this is reliable
-        settings, source = self.document.settings, self.document["source"]
+        source = self.document["source"]
         assert source.startswith(self.env.srcdir)
 
         for node in self.document.traverse(is_translated_node):
-            # add translated_text_css to classes
-            append_css_class(node, translated_text_css)
+            # add TRANSLATED_TEXT_CSS to classes
+            append_css_class(node, TRANSLATED_TEXT_CSS)
 
             # append original msg node as literal node
-            # orig_text_node = literal(text=node[original_text_attr])
-            orig_text_node = locale_original_text(text=node[original_text_attr])
-            append_css_class(orig_text_node, original_text_css)
+            # orig_text_node = literal(text=node[ORIGINAL_TEXT_ATTR])
+            orig_text_node = locale_original_text(text=node[ORIGINAL_TEXT_ATTR])
+            append_css_class(orig_text_node, ORIGINAL_TEXT_CSS)
             node.append(orig_text_node)
 
 
