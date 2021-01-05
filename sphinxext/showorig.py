@@ -1,7 +1,10 @@
 # support for tooltip showing original text ----------------------------
+from typing import Any, Text
 from os import path
 from docutils.utils import relative_path
-from docutils.nodes import Element, TextElement
+from docutils.nodes import Node, Element, TextElement
+from docutils.writers._html_base import HTMLTranslator
+from sphinx.application import Sphinx
 from sphinx.builders.html import StandaloneHTMLBuilder
 from sphinx.locale import init as init_locale
 from sphinx.transforms import SphinxTransform
@@ -11,13 +14,6 @@ from sphinx.util.i18n import docname_to_domain
 from sphinx.util.nodes import extract_messages
 
 logger = logging.getLogger(__name__)
-
-if False:
-    # For type annotation
-    from typing import Any, Text
-    from docutils.nodes import Node
-    from docutils.writers._html_base import HTMLTranslator
-    from sphinx.application import Sphinx
 
 
 class LocaleOriginalText(TextElement):
@@ -135,7 +131,7 @@ def setup(app: Sphinx) -> None:
 
     # for original text tooltip support
     def setup_html_builder_extras(event_app: Sphinx) -> None:
-        lang = event_app.config.language
+        lang = event_app.config.language  # type: ignore
         if lang is None:
             return
         if not isinstance(event_app.builder, StandaloneHTMLBuilder):
