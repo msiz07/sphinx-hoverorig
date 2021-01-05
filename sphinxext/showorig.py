@@ -1,8 +1,9 @@
 # support for tooltip showing original text ----------------------------
-from typing import Any, Text
 from os import path
+from typing import Any, Text
+
+from docutils.nodes import Element, Node, NodeVisitor, TextElement
 from docutils.utils import relative_path
-from docutils.nodes import Node, Element, TextElement
 from docutils.writers._html_base import HTMLTranslator
 from sphinx.application import Sphinx
 from sphinx.builders.html import StandaloneHTMLBuilder
@@ -20,13 +21,23 @@ class LocaleOriginalText(TextElement):
     pass
 
 
-def visit_locale_original_text(self: HTMLTranslator, node: TextElement) -> None:
-    self.body.append(self.starttag(node, "span"))
+def visit_locale_original_text(self: NodeVisitor, node: TextElement) -> None:
+    if isinstance(self, HTMLTranslator):
+        self.body.append(self.starttag(node, "span"))
+    else:
+        logger.warning(
+            "self '{}' is not an instance of HTMLTranslator".format(self)
+        )
 
 
-def depart_locale_original_text(self: HTMLTranslator, node: TextElement) -> None:
-    self.body.append("</span>")
-    # logger.info(node)
+def depart_locale_original_text(self: NodeVisitor, node: TextElement) -> None:
+    if isinstance(self, HTMLTranslator):
+        self.body.append("</span>")
+        # logger.info(node)
+    else:
+        logger.warning(
+            "self '{}' is not an instance of HTMLTranslator".format(self)
+        )
 
 
 ORIGINAL_TEXT_ATTR = "data-trans-original-text"
@@ -63,7 +74,9 @@ class PreserveLocaleOriginalMessage(SphinxTransform):
             path.join(self.env.srcdir, directory)
             for directory in self.config.locale_dirs
         ]
-        catalog, has_catalog = init_locale(dirs, self.config.language, textdomain)
+        catalog, has_catalog = init_locale(
+            dirs, self.config.language, textdomain
+        )
         if not has_catalog:
             return
 
