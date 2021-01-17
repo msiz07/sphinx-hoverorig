@@ -74,13 +74,15 @@ class PreserveLocaleOriginalMessage(SphinxTransform):
             path.join(self.env.srcdir, directory)
             for directory in self.config.locale_dirs
         ]
+        # sphinx.locale.init changes its type for args by version
+        # so, ignore mypy check for the following call
         catalog, has_catalog = init_locale(
-            dirs, self.config.language, textdomain
+            dirs, self.config.language, textdomain  # type: ignore
         )
         if not has_catalog:
             return
 
-        # preserve original msg of translated one as ORIGINAL_TEXT_ATTR attribute
+        # for translated text keep original as ORIGINAL_TEXT_ATTR attribute
         for node, msg in extract_messages(self.document):
             msgstr = catalog.gettext(msg)
             if not msgstr or msgstr == msg or not msgstr.strip():
