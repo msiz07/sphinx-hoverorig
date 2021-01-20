@@ -2,9 +2,18 @@
 from os import path
 from typing import Any, Text
 
-from docutils.nodes import Element, Node, NodeVisitor, TextElement
+from docutils.nodes import (
+    Element,
+    Node,
+    NodeVisitor,
+    TextElement,
+    image,
+    literal_block,
+    raw,
+)
 from docutils.utils import relative_path
 from docutils.writers._html_base import HTMLTranslator
+from sphinx.addnodes import toctree
 from sphinx.application import Sphinx
 from sphinx.builders.html import StandaloneHTMLBuilder
 from sphinx.locale import init as init_locale
@@ -74,7 +83,7 @@ class PreserveLocaleOriginalMessage(SphinxTransform):
             path.join(self.env.srcdir, directory)
             for directory in self.config.locale_dirs
         ]
-        # sphinx.locale.init changes its type for args by version
+        # sphinx.locale.init changes its args type by version
         # so, ignore mypy check for the following call
         catalog, has_catalog = init_locale(
             dirs, self.config.language, textdomain  # type: ignore
@@ -102,6 +111,32 @@ def append_css_class(node: Element, class_: Text) -> None:
     node.coerce_append_attr_list("classes", class_)
 
 
+def is_gettext_additional_additional_targets(node: Node) -> bool:
+    # This func judges if passed `node` is one of the following, which can be
+    # tranlated by `gettext_addtional_targets` setting and is not supported by
+    # this sphinx extension:
+    # - toctree (with hidden attribute as True)
+    # - literal-block
+    # - raw
+    # - image
+
+    # hidden toc element
+    if isinstance(node, toctree) and node.get("hidden", None) is True:
+        return True
+
+    # literal_block / raw / image nodes are not supported since they are not
+    # supported due to implementation issue, e.g. compatibility with code-block
+    # highlight HTML writing
+    elif (
+        isinstance(node, literal_block)
+        or isinstance(node, raw)
+        or isinstance(node, image)
+    ):
+        return True
+    else:
+        return False
+
+
 class PostProcessTranslatedNode(SphinxTransform):
     """
     Add %s class attribute to translated text node.
@@ -115,7 +150,6 @@ class PostProcessTranslatedNode(SphinxTransform):
     # 80 is the priority of sphinx.transforms.i18n.RemoveTranslatableInline
     default_priority = 999
     # default_priority = 20
-    # default_priority = 999
 
     logger = logging.getLogger(__name__)
 
@@ -125,11 +159,20 @@ class PostProcessTranslatedNode(SphinxTransform):
         assert source.startswith(self.env.srcdir)
 
         for node in self.document.traverse(is_translated_node):
+            # some tranlated node for gettext_additional_targets setting is
+            # not supported by this sphinx extension. The target may be the
+            # followings:
+            # - toctree (with hidden attribute as True)
+            # - literal-block
+            # - raw
+            # - image
+            if is_gettext_additional_additional_targets(node):
+                continue
+
             # add TRANSLATED_TEXT_CSS to classes
             append_css_class(node, TRANSLATED_TEXT_CSS)
 
-            # append original msg node as literal node
-            # orig_text_node = literal(text=node[ORIGINAL_TEXT_ATTR])
+            # append original msg node as LocaleOriginalText node
             orig_text_node = LocaleOriginalText(text=node[ORIGINAL_TEXT_ATTR])
             append_css_class(orig_text_node, ORIGINAL_TEXT_CSS)
             node.append(orig_text_node)
