@@ -16,7 +16,25 @@ import sphinx
 from sphinx.testing import comparer
 from sphinx.testing.path import path
 
+
 pytest_plugins = 'sphinx.testing.fixtures'
+
+
+# copied from "sphinx.testing.fixtures" module to suppress warning
+# messages during pytest execution in my environment
+def pytest_configure(config):
+    DEFAULT_ENABLED_MARKERS = [
+        (
+            'sphinx(builder, testroot=None, freshenv=False,'
+            ' confoverrides=None, tags=None, docutilsconf=None, parallel=0): '
+            ' arguments to initialize the sphinx test application.'
+        ),
+        'test_params(shared_result=...): test parameters.',
+    ]
+    # register custom markers
+    for marker in DEFAULT_ENABLED_MARKERS:
+        config.addinivalue_line('markers', marker)
+
 
 # Exclude 'roots' dirs for pytest test collector
 collect_ignore = ['roots']
