@@ -1,6 +1,8 @@
 import re
 
 import pytest
+
+from pkg_resources import resource_stream
 from sphinx.testing.util import (
     assert_re_search,
     path,
@@ -16,15 +18,6 @@ sphinx_ext = pytest.mark.sphinx(
         "extensions": ["sphinxext.showorig"],
     },
 )
-
-
-@pytest.fixture
-def sample_fixture():
-    return "output from sample_fixture"
-
-
-def test_dummy(sample_fixture):
-    assert sample_fixture == "output from sample_fixture"
 
 
 @sphinx_ext
@@ -43,6 +36,17 @@ def read_text_from_sphinx_path(path_: path):
         return path_.text()
     else:
         return path_.read_text()
+
+
+@sphinx_ext
+@pytest.mark.sphinx("html")
+@pytest.mark.test_params(shared_result="test_ext_basic")
+def test_copy_css(app):
+    app.build()
+    assert (app.outdir / "_static" / "trans-tooltip.css").exists()
+    src_css = resource_stream("sphinxext.showorig", "_static/trans-tooltip.css").read()
+    dst_css = (app.outdir / "_static" / "trans-tooltip.css").bytes()
+    assert src_css == dst_css
 
 
 @sphinx_ext
