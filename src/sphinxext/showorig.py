@@ -111,7 +111,7 @@ def append_css_class(node: Element, class_: Text) -> None:
     node.coerce_append_attr_list("classes", class_)
 
 
-def is_gettext_additional_additional_targets(node: Node) -> bool:
+def is_gettext_additional_targets(node: Node) -> bool:
     # This func judges if passed `node` is one of the following, which can be
     # tranlated by `gettext_addtional_targets` setting and is not supported by
     # this sphinx extension:
@@ -166,7 +166,7 @@ class PostProcessTranslatedNode(SphinxTransform):
             # - literal-block
             # - raw
             # - image
-            if is_gettext_additional_additional_targets(node):
+            if is_gettext_additional_targets(node):
                 continue
 
             # add TRANSLATED_TEXT_CSS to classes
