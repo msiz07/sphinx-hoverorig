@@ -207,10 +207,11 @@ def setup(app: Sphinx) -> None:
 
     def copy_asset_files(event_app: Sphinx, exception: Exception) -> None:
         if not exception:
-            static_dir = path.join(path.dirname(__file__), "_static")
-            out_static_dir = path.join(event_app.outdir, "_static")
-            copy_asset(static_dir, out_static_dir, context={})
-            # logger.info("static_dir: %s" % static_dir)
-            # logger.info("outdir: %s" % out_static_dir)
+            src_static_dir = path.join(path.dirname(__file__), "_static")
+            dst_static_dir = path.join(event_app.outdir, "_static")
+            # logger.info("__file__: %s" % __file__)
+            # logger.info("src_static_dir: %s" % src_static_dir)
+            # logger.info("dst_static_dir: %s" % dst_static_dir)
+            copy_asset(src_static_dir, dst_static_dir, context={})
 
     app.connect("build-finished", copy_asset_files)

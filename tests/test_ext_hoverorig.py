@@ -1,3 +1,4 @@
+from os import path as _path
 import re
 
 import pytest
@@ -15,7 +16,7 @@ sphinx_ext = pytest.mark.sphinx(
         "language": "xx",
         "locale_dirs": ["."],
         "gettext_compact": False,
-        "extensions": ["sphinxext.showorig"],
+        "extensions": ["sphinxext.hoverorig"],
     },
 )
 
@@ -43,9 +44,12 @@ def read_text_from_sphinx_path(path_: path):
 @pytest.mark.test_params(shared_result="test_ext_basic")
 def test_copy_css(app):
     app.build()
-    assert (app.outdir / "_static" / "trans-tooltip.css").exists()
-    src_css = resource_stream("sphinxext.showorig", "_static/trans-tooltip.css").read()
-    dst_css = (app.outdir / "_static" / "trans-tooltip.css").bytes()
+    dst_css_fname = _path.join(app.outdir, "_static", "trans-tooltip.css")
+    assert _path.exists(dst_css_fname)
+    src_css = resource_stream(
+        "sphinxext.hoverorig", "_static/trans-tooltip.css"
+    ).read()
+    dst_css = open(dst_css_fname, "rb").read()
     assert src_css == dst_css
 
 
