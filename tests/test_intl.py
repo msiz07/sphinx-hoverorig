@@ -26,6 +26,7 @@ sphinx_intl = pytest.mark.sphinx(
     confoverrides={
         'language': 'xx', 'locale_dirs': ['.'],
         'gettext_compact': False,
+        'master_doc': "index",
     },
 )
 

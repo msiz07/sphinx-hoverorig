@@ -13,7 +13,7 @@ import docutils
 import pytest
 
 import sphinx
-from sphinx.testing import comparer
+#from sphinx.testing import comparer
 from sphinx.testing.path import path
 
 
@@ -54,8 +54,8 @@ def pytest_report_header(config):
     return header
 
 
-def pytest_assertrepr_compare(op, left, right):
-    comparer.pytest_assertrepr_compare(op, left, right)
+#def pytest_assertrepr_compare(op, left, right):
+#    comparer.pytest_assertrepr_compare(op, left, right)
 
 
 def _initialize_test_directory(session):
