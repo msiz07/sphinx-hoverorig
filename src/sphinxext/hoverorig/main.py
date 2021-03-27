@@ -1,4 +1,6 @@
 # support for tooltip showing original text ----------------------------
+import sphinx
+
 from os import path
 from typing import Any, Text
 
@@ -20,7 +22,10 @@ from sphinx.locale import init as init_locale
 from sphinx.transforms import SphinxTransform
 from sphinx.util import logging
 from sphinx.util.fileutil import copy_asset
-from sphinx.util.i18n import docname_to_domain
+if sphinx.version_info[0] >= 2:
+    from sphinx.util.i18n import docname_to_domain
+else:
+    from sphinx.util.i18n import find_catalog as docname_to_domain
 from sphinx.util.nodes import extract_messages
 
 logger = logging.getLogger(__name__)

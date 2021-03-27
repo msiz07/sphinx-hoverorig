@@ -17,6 +17,7 @@ sphinx_ext = pytest.mark.sphinx(
         "locale_dirs": ["."],
         "gettext_compact": False,
         "extensions": ["sphinxext.hoverorig"],
+        "master_doc": "index",
     },
 )
 
