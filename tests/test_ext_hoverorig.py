@@ -4,6 +4,7 @@ import re
 import pytest
 
 from pkg_resources import resource_stream
+from sphinx import version_info as sphinx_version_info
 from sphinx.testing.util import (
     assert_re_search,
     path,
@@ -147,6 +148,7 @@ def test_html_index_entries(app):
         assert_re_search(expr, result, re.M)
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_ext
 @pytest.mark.sphinx("html")
 @pytest.mark.test_params(shared_result="test_ext_basic")
@@ -220,6 +222,7 @@ def test_html_template(app):
     assert "SPHINX 2013.120" in result
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_ext
 @pytest.mark.sphinx("html")
 @pytest.mark.test_params(shared_result="test_ext_basic")

@@ -97,6 +97,7 @@ def assert_count(expected_expr, result, count):
     assert len(re.findall(*find_pair)) == count, find_pair
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('text')
 @pytest.mark.test_params(shared_result='test_intl_basic')
@@ -146,6 +147,7 @@ def test_text_subdirs(app):
     assert_startswith(result, "1. subdir contents\n******************\n")
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('text')
 @pytest.mark.test_params(shared_result='test_intl_basic')
@@ -196,6 +198,7 @@ def test_text_inconsistency_warnings(app, warning):
     assert_re_search(expected_citation_warning_expr, warnings)
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('text')
 @pytest.mark.test_params(shared_result='test_intl_basic')
@@ -218,6 +221,7 @@ def test_text_literalblock_warnings(app, warning):
     assert_re_search(expected_warning_expr, warnings)
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('text')
 @pytest.mark.test_params(shared_result='test_intl_basic')
@@ -257,6 +261,7 @@ def test_text_glossary_term(app, warning):
     assert 'term not in glossary' not in warnings
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('text')
 @pytest.mark.test_params(shared_result='test_intl_basic')
@@ -302,6 +307,7 @@ def test_text_section(app):
         assert expect_msg.string in result
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('text')
 @pytest.mark.test_params(shared_result='test_intl_basic')
@@ -319,6 +325,7 @@ def test_text_seealso(app):
     assert result == expect
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('text')
 @pytest.mark.test_params(shared_result='test_intl_basic')
@@ -430,6 +437,7 @@ def test_text_admonitions(app):
     assert "1. ADMONITION TITLE" in result
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('gettext')
 @pytest.mark.test_params(shared_result='test_intl_gettext')
@@ -512,6 +520,7 @@ def test_text_topic(app):
         assert expect_msg.string in result
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('gettext')
 @pytest.mark.test_params(shared_result='test_intl_gettext')
@@ -578,6 +587,7 @@ def test_gettext_buildr_ignores_only_directive(app):
         assert expect_msg.id in [m.id for m in actual if m.id]
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 # use individual shared_result directory to avoid "incompatible doctree" error
 @pytest.mark.sphinx(testroot='builder-gettext-dont-rebuild-mo')
@@ -703,6 +713,7 @@ def test_html_index_entries(app):
         assert_re_search(expr, result, re.M)
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('html')
 @pytest.mark.test_params(shared_result='test_intl_basic')
@@ -760,6 +771,7 @@ def test_html_template(app):
     assert "SPHINX 2013.120" in result
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx('html')
 @pytest.mark.test_params(shared_result='test_intl_basic')
@@ -1118,6 +1130,7 @@ def test_additional_targets_should_not_be_translated(app):
     assert_count(expected_expr, result, 1)
 
 
+@pytest.mark.skipif(sphinx_version_info < (2, 0), reason="skip if sphinx version < 2.0") #XXX
 @sphinx_intl
 @pytest.mark.sphinx(
     'html',
@@ -1132,6 +1145,7 @@ def test_additional_targets_should_not_be_translated(app):
             'raw',
             'image',
         ],
+        'master_doc': "index",
     }
 )
 def test_additional_targets_should_be_translated(app):
