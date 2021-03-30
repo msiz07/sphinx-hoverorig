@@ -1220,7 +1220,7 @@ def test_text_references(app, warning):
 @pytest.mark.sphinx(
     'dummy', testroot='images',
     srcdir='test_intl_images',
-    confoverrides={'language': 'xx'}
+    confoverrides={'language': 'xx', 'master_doc': "index"}
 )
 @pytest.mark.xfail(os.name != 'posix', reason="Not working on windows")
 def test_image_glob_intl(app):
@@ -1267,6 +1267,7 @@ def test_image_glob_intl(app):
     confoverrides={
         'language': 'xx',
         'figure_language_filename': '{root}{ext}.{language}',
+        'master_doc': "index",
     }
 )
 @pytest.mark.xfail(os.name != 'posix', reason="Not working on windows")
